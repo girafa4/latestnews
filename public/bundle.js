@@ -46,7 +46,7 @@ function(module, exports, __webpack_require__) {
 
 	(function webpackMissingModule() { throw new Error("Cannot find module \"./app/app.js\""); }());
 	(function webpackMissingModule() { throw new Error("Cannot find module \"./app.js\""); }());
-	(function webpackMissingModule() { throw new Error("Cannot find module \"/Users/jimmiejackson/Desktop/Bootcamp/Homework/Assignment19/nytreact/bundle.js\""); }());
+	(function webpackMissingModule() { throw new Error("Cannot find module \"/Users/adriana/Desktop/latestnews/bundle.js\""); }());
 
 
 }
