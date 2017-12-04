@@ -1,41 +1,69 @@
-var express = require('express')
-var bodyParser = require('body-parser')
+//////////////////
+// DEPENDENCIES //
+//////////////////
+
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var logger = require('morgan');
 var mongoose = require('mongoose');
-var cheerio = require('cheerio');
 var request = require('request');
-var app = express()
-var PORT = process.env.PORT || 3001;
- 
- //Body-Parser Code 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false })) 
-// parse application/json
-app.use(bodyParser.json())
-mongoose.connect('mongodb://localhost/latestnews');
+var cheerio = require('cheerio');
+
+// Use morgan and bodyParser wit app
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+	extended: false
+}));
+
+// make public a static directory
+app.use(express.static('public'));
+
+// database configuration with mongoose
+mongoose.connect('mongodb://localhost/nytreact');
+
 var db = mongoose.connection;
-db.on("error", function(error) {
-  console.log("Mongoose Error: ", error);
+
+// show any mongoose errors
+db.on('error', function(err) {
+	console.log('Mongoose Error: ', err);
 });
 
-db.once("open", function() {
-  console.log("Mongoose connection successful.");
+// once logged in to the db through mongoose, log a success message
+db.once('open', function() {
+	console.log('Mongoose connection successful.');
 });
 
-//Routes
-app.get('/', function (req, res) {
-  res.send('Hello World')
+// bring in models
+var Article = require('./models/Article.js');
+
+
+////////////
+// ROUTES //
+////////////
+
+// main index route
+app.get('/', function(req, res) {
+	res.send('./public/index.html');
+});
+
+app.get('/api/saved', function(req, res) {
+	Article.find({}, function(err, doc) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(doc);
+		}
+	});
+});
+
+app.post('/api/saved', function(req, res) {
+
 })
- 
- app.get('/scrape', function(req, res){
- 	request('http://www.nytimes.com', function (error, response, body) {
-  console.log('error:', error); // Print the error if one occurred
-  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  console.log('body:', body); // Print the HTML for the Google homepage.
-});
 
- })
-app.listen(PORT, function() {
-	console.log("listening on port: " + PORT )
-});
 
- 
+// listen on port 3000
+app.listen(process.env.PORT || 3000, function() {
+	console.log('App running on port 3000');
+});
